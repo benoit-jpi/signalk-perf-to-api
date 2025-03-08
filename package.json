@@ -1,0 +1,30 @@
+{
+    "name": "signalk-perf-to-api",
+    "version": "0.1.0",
+    "description": "Signal K plugin to log performance data to an OpenAPI.",
+    "main": "index.js",
+    "scripts": {
+	"changelog": "github-changes -o benoit-jpi -r signalk-perf-logger -a --only-pulls --use-commit-body --data=pulls  --tag-name=v$npm_package_version",
+	"test": "mocha"
+    },
+    "repository": {
+	"type": "git",
+	"url": "git+https://github.com/benoit-jpi/signalk-perf-to-api.git"
+    },
+    "keywords": [
+	"signalk-node-server-plugin"
+    ],
+    "author": "Jean-Pierre Benoit",
+    "license": "ISC",
+    "dependencies": {
+	"axios": "*",
+	"baconjs": "^0.7.88",
+	"debug": "^3.1.0",
+	"github-changes": "^2.0.3",
+	"lodash": "^4.17.4"
+    },
+    "bugs": {
+	"url": "https://github.com/benoit-jpi/signalk-perf-to-api/issues"
+    },
+    "homepage": "https://github.com/benoit-jpi/signalk-perf-to-api#readme"
+}
