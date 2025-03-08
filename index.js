@@ -24,7 +24,6 @@ TODO:
 
 module.exports = function(app) {
     const boatname = app.getSelfPath('name');
-    const jwt='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZGlzcGxheV9uYW1lIjoiSmVhbi1QaWVycmUgQkVOT0lUIiwidXNlcm5hbWUiOiJiZW5vaXQtanBpIiwiaWF0IjoxNzQwNjg5NDMyfQ.RC2MIjakRdzrzFEwZYHxYeuzzbzMk96WWZ0JJd1CTU4'
     const plugin = {}
     var timerId
     var sailconfig
@@ -41,12 +40,17 @@ module.exports = function(app) {
 	    hostname: {
 		type: 'string',
 		title: 'Perf API hostname',
-            default: 'api.domain'
+                default: 'api.domain'
 	    },
 	    port: {
 		type: 'number',
 		title: 'Perf API port',
-            default: 80
+                default: 80
+	    },
+	    jwt: {
+		type: 'string',
+		title: 'JSON Web token',
+		default: 'zob'
 	    },
 	    period: {
 		type: 'number',
@@ -73,6 +77,7 @@ module.exports = function(app) {
 
 	hostname = options.hostname
 	port = options.port
+	jwt=options.jwt
         period = options.period
 	sailconfig = options.sailconfig
 	enginestate = options.enginestate
