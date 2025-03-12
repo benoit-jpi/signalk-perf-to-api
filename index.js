@@ -22,7 +22,6 @@ TODO:
 */
 
 module.exports = function(app) {
-    const boatname = app.getSelfPath('name');
     const plugin = {}
     var timerId
     var sailconfig
@@ -86,7 +85,7 @@ module.exports = function(app) {
 	    return
 	}
 
-	const url='http://'+hostname+":"+port+"/schema/"+boatname+"/table/perf/bycfgname?jwt="+jwt
+	const url='http://'+hostname+":"+port+"/perf/param/bycfgname?jwt="+jwt
 	timerId = setInterval(() => { sendData(url) }, period * 1000 )
     }
     
