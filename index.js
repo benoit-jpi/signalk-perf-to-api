@@ -27,34 +27,14 @@ module.exports = function(app) {
     var sailconfig
     
     plugin.id = "sk-perf-to-api"
-    plugin.name = "Signal K performance data Sender"
-    plugin.description = "Send Signal K performance data to an OpenAPI."
+    plugin.name = "Performance data Sender"
+    plugin.description = "Send sailboat performance data to a database"
 
     plugin.schema = {
 	type: "object",
-	title: "Performance data sending",
-	description: "Send Signal K performance data into an OpenAPI.",
+	title: "Sailboat performance data post",
+	description: "Post sailboat parameters to an api",
 	properties: {
-	    hostname: {
-		type: 'string',
-		title: 'Perf API hostname',
-                default: 'api.domain'
-	    },
-	    port: {
-		type: 'number',
-		title: 'Perf API port',
-                default: 80
-	    },
-	    jwt: {
-		type: 'string',
-		title: 'JSON Web token',
-		default: 'zob'
-	    },
-	    period: {
-		type: 'number',
-		title: 'Sending period (s)',
-		default: 300
-	    },
 	    sailconfig: {
 		type: 'string',
 		title: 'Sails config',
@@ -66,15 +46,35 @@ module.exports = function(app) {
 		title: 'Engine state',
 		default: 'started',
 		enum: ['started', 'stopped'],
+	    },
+	    protocol: {
+		type: 'string',
+		title: 'Protocol',
+		default: 'http',
+		enum: ['http','https']
+	    },
+	    hostname: {
+		type: 'string',
+		title: 'Host name / adress',
+                default: 'lffdb-api.localhost'
+	    },
+	    jwt: {
+		type: 'string',
+		title: 'JSON Web token',
+		default: 'zob'
+	    },
+	    period: {
+		type: 'number',
+		title: 'Sending period (s)',
+		default: 300
 	    }
 	}
     }
 
-
     plugin.start = function (options) {
 
+	protocol=options.protocol
 	hostname = options.hostname
-	port = options.port
 	jwt=options.jwt
         period = options.period
 	sailconfig = options.sailconfig
@@ -85,7 +85,7 @@ module.exports = function(app) {
 	    return
 	}
 
-	const url='http://'+hostname+":"+port+"/perf/param/bycfgname?jwt="+jwt
+	const url=protocol+'://'+hostname+"/perf/param/bycfgname?jwt="+jwt
 	timerId = setInterval(() => { sendData(url) }, period * 1000 )
     }
     
