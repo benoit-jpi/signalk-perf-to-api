@@ -55,8 +55,8 @@ module.exports = function(app) {
 	    },
 	    hostname: {
 		type: 'string',
-		title: 'Host name / adress',
-                default: 'lffdb-api.localhost'
+		title: 'Host name / IP',
+                default: 'api.localhost'
 	    },
 	    jwt: {
 		type: 'string',
