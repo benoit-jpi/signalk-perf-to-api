@@ -4,7 +4,7 @@
     "description": "Signal K plugin to log performance data to an OpenAPI.",
     "main": "index.js",
     "scripts": {
-	"changelog": "github-changes -o benoit-jpi -r signalk-perf-logger -a --only-pulls --use-commit-body --data=pulls  --tag-name=v$npm_package_version",
+	"changelog": "github-changes -o benoit-jpi -r signalk-perf-to-api -a --only-pulls --use-commit-body --data=pulls  --tag-name=v$npm_package_version",
 	"test": "mocha"
     },
     "repository": {
