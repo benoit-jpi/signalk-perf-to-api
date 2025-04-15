@@ -1,9 +1,4 @@
 const debug = require("debug")("signalk:signalk-perf-to-api");
-const util = require("util");
-const _ = require('lodash')
-const path = require('path')
-const fs = require('fs')
-const { spawn } = require('child_process')
 const axios = require('axios')
 
 /*
@@ -41,12 +36,6 @@ module.exports = function(app) {
 		default: 'config01 - Intermediate jib + Main',
 		enum: ['config01 - Intermediate jib + Main', 'config02 - Intermediate jib + Main one reef', 'config03 - Genoa + Main', 'config04 - Small jib + Main one reef', 'config05 - Small jib + Main two reef', 'config06 - Storm jib + Main two reefs', 'config07 - Storm jib' ]
 	    },
-	    enginestate: {
-		type: 'string',
-		title: 'Engine state',
-		default: 'started',
-		enum: ['started', 'stopped'],
-	    },
 	    protocol: {
 		type: 'string',
 		title: 'Protocol',
@@ -71,6 +60,8 @@ module.exports = function(app) {
 	}
     }
 
+    const setStatus = app.setPluginStatus || app.setProviderStatus;
+
     plugin.start = function (options) {
 
 	protocol=options.protocol
@@ -78,10 +69,9 @@ module.exports = function(app) {
 	jwt=options.jwt
         period = options.period
 	sailconfig = options.sailconfig
-	enginestate = options.enginestate
 
 	if (typeof hostname === 'undefined') {
-	    app.setProviderStatus('hostname not defined, plugin disabled')
+	    setStatus(`hostname not defined, plugin disabled`)
 	    return
 	}
 
@@ -104,6 +94,11 @@ module.exports = function(app) {
 
 	    if ((tunix-timestamp) < period * 1000) { // only send data if age of data < period
 
+		let enginestate = app.getSelfPath('propulsion.main.state.value')
+		if (enginestate === 'started' || enginestate === undefined) { // only send data if engine is stopped
+		    return
+		}
+
 		let longitude=Number(app.getSelfPath('navigation.position.value.longitude')).toFixed(6)
 		let latitude=Number(app.getSelfPath('navigation.position.value.latitude')).toFixed(6)
 		let sog=(Number(app.getSelfPath('navigation.speedOverGround.value'))*1.94384).toFixed(1)
@@ -115,14 +110,12 @@ module.exports = function(app) {
 
 		let configname = sailconfig.split(' - ')[0]
 		let configdesc = sailconfig.split(' - ')[1]
-//		console.log({ 'config': configname, 'description': configdesc})
 
 		stw=5.
 		awa=35.
 		aws=10.
 		dbt=17.3
 		if (isNaN(stw) || isNaN(awa) || isNaN(aws) || isNaN(dbt)) {
-		    console.log('too many Nan values')
 		    return
 		}
 		
@@ -144,7 +137,7 @@ module.exports = function(app) {
 		    'engine': enginestate
 		}
 
-//		console.log(data)
+		app.debug(`data:`, data);
 		const postDataPoint = async () => {
 		    try {
 			const res = await axios.post(url, data, options)
