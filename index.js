@@ -1,26 +1,43 @@
-const debug = require("debug")("signalk:signalk-perf-to-api");
-const axios = require('axios')
+/****************************************************************************
+ISC License
 
-/*
+Copyright (c) 2025 Jean-Pierre Benoit
 
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+const debug = require("debug")("signalk:signalk-engine-state");
+
+*****************************************************************************
 Signal K server plugin to send performance data to an Open API.
 
 Features :
 - Configurable connection parameters
-  * hostname
-  * port
-  * sending period
   * sails config name
+  * protocol
+  * hostname
+  * jwt
+  * sending period
 
-TODO:
+TODO :
 
-*/
+*****************************************************************************/
+const debug = require("debug")("signalk:signalk-perf-to-api")
+const axios = require('axios')
 
 module.exports = function(app) {
     const plugin = {}
     var timerId
     var sailconfig
-    
+
     plugin.id = "sk-perf-to-api"
     plugin.name = "Performance data Sender"
     plugin.description = "Send sailboat performance data to a database"
@@ -78,7 +95,7 @@ module.exports = function(app) {
 	const url=protocol+'://'+hostname+"/perf/param/bycfgname?jwt="+jwt
 	timerId = setInterval(() => { sendData(url) }, period * 1000 )
     }
-    
+
     plugin.stop = function () {
 
 	clearInterval(timerId)
@@ -88,7 +105,7 @@ module.exports = function(app) {
 
     function sendData(url) {
 	try {
-	    let tunix=Math.round(+new Date())
+	    let tunix=Math.round(new Date())
 	    let datetime=app.getSelfPath('navigation.datetime.value')
 	    let timestamp=Date.parse(datetime)
 
@@ -115,10 +132,11 @@ module.exports = function(app) {
 		awa=35.
 		aws=10.
 		dbt=17.3
-		if (isNaN(stw) || isNaN(awa) || isNaN(aws) || isNaN(dbt)) {
+		if (isNaN(longitude) || isNaN(latitude) || isNaN(sog) || isNaN(cog) ||
+		    isNaN(stw) || isNaN(awa) || isNaN(aws) || isNaN(dbt)) { // only send data if nothing is NaN
 		    return
 		}
-		
+
 		const options = {
 		    headers: {'Content-Type': 'application/json'}
 		};
@@ -137,7 +155,7 @@ module.exports = function(app) {
 		    'engine': enginestate
 		}
 
-		app.debug(`data:`, data);
+		app.debug('data:', JSON.stringify(data,null,2));
 		const postDataPoint = async () => {
 		    try {
 			const res = await axios.post(url, data, options)
