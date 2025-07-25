@@ -14,7 +14,6 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-const debug = require("debug")("signalk:signalk-engine-state");
 
 *****************************************************************************
 Signal K server plugin to send performance data to an Open API.
@@ -151,8 +150,7 @@ module.exports = function(app) {
 		    'sog': sog,
 		    'cog': cog,
 		    'longitude': longitude,
-		    'latitude': latitude,
-		    'engine': enginestate
+		    'latitude': latitude
 		}
 
 		app.debug('data:', JSON.stringify(data,null,2));
