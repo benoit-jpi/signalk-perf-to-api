@@ -125,12 +125,7 @@ module.exports = function(app) {
 		let dbt=(Number(app.getSelfPath('environment.depth.belowKeel.value'))).toFixed(1)
 
 		let configname = sailconfig.split(' - ')[0]
-		let configdesc = sailconfig.split(' - ')[1]
 
-		stw=5.
-		awa=35.
-		aws=10.
-		dbt=17.3
 		if (isNaN(longitude) || isNaN(latitude) || isNaN(sog) || isNaN(cog) ||
 		    isNaN(stw) || isNaN(awa) || isNaN(aws) || isNaN(dbt)) { // only send data if nothing is NaN
 		    return
