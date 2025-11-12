@@ -50,7 +50,16 @@ module.exports = function(app) {
 		type: 'string',
 		title: 'Sails config',
 		default: 'config01 - Intermediate jib + Main',
-		enum: ['config01 - Intermediate jib + Main', 'config02 - Intermediate jib + Main one reef', 'config03 - Genoa + Main', 'config04 - Small jib + Main one reef', 'config05 - Small jib + Main two reef', 'config06 - Storm jib + Main two reefs', 'config07 - Storm jib' ]
+		enum: ['config01 - Intermediate jib + Main',
+		       'config02 - Intermediate jib + Main one reef',
+		       'config03 - Genoa + Main',
+		       'config04 - Small jib + Main',
+		       'config05 - Small jib + Main one reef',
+		       'config06 - Small jib + Main two reef',
+		       'config07 - Storm jib + Main two reefs',
+		       'config08 - Storm jib',
+		       'config09 - Small jib',
+		       'config99 - test API' ]
 	    },
 	    protocol: {
 		type: 'string',
@@ -110,8 +119,9 @@ module.exports = function(app) {
 
 	    if ((tunix-timestamp) < period * 1000) { // only send data if age of data < period
 
+		// only send data if engine is stopped
 		let enginestate = app.getSelfPath('propulsion.main.state.value')
-		if (enginestate === 'started' || enginestate === undefined) { // only send data if engine is stopped
+		if (enginestate === 'started' || enginestate === undefined) {
 		    return
 		}
 
@@ -122,14 +132,28 @@ module.exports = function(app) {
 		let stw=(Number(app.getSelfPath('navigation.speedThroughWater.value'))*1.94384).toFixed(1)
 		let aws=(Number(app.getSelfPath('environment.wind.speedApparent.value'))*1.94384).toFixed(1)
 		let awa=(Number(app.getSelfPath('environment.wind.angleApparent.value'))*(180/Math.PI)).toFixed()
-		let dbt=(Number(app.getSelfPath('environment.depth.belowKeel.value'))).toFixed(1)
-
+		let hdt=(Number(app.getSelfPath('navigation.headingTrue.value'))*(180/Math.PI)).toFixed()
+		let heel=(Number(app.getSelfPath('navigation.attitude.roll.value'))*(180/Math.PI)).toFixed()
+		
 		let configname = sailconfig.split(' - ')[0]
 
-		if (isNaN(longitude) || isNaN(latitude) || isNaN(sog) || isNaN(cog) ||
-		    isNaN(stw) || isNaN(awa) || isNaN(aws) || isNaN(dbt)) { // only send data if nothing is NaN
+		// only send data if nothing is NaN
+		if (isNaN(longitude) || isNaN(latitude) || 
+		    isNaN(sog) ||
+		    isNaN(cog) ||
+		    isNaN(stw) ||
+		    isNaN(awa) ||
+		    isNaN(aws) ||
+		    isNaN(hdt) ||
+		    isNaN(heel)) {
 		    return
 		}
+/*
+// Données de test
+		stw=5.,
+		awa=45.,
+		aws=10.
+*/		
 
 		const options = {
 		    headers: {'Content-Type': 'application/json'}
@@ -141,9 +165,10 @@ module.exports = function(app) {
 		    'stw': stw,
 		    'awa': awa,
 		    'aws': aws,
-		    'dbt': dbt,
 		    'sog': sog,
 		    'cog': cog,
+		    'hdt': hdt,
+		    'heel': heel,
 		    'longitude': longitude,
 		    'latitude': latitude
 		}
